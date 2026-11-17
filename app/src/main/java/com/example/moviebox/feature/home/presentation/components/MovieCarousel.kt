@@ -41,32 +41,11 @@ import java.util.concurrent.CancellationException
 import kotlin.math.abs
 import kotlin.math.pow
 
-
-
-
-
-
 @Composable
 fun MovieCarousel(
+    movies: List<Movie>,
     modifier: Modifier = Modifier,
 ) {
-    val titles = listOf(
-        "The Last of Us",
-        "Breaking Bad",
-        "Game of Thrones",
-        "Inception",
-        "Interstellar",
-        "The Dark Knight"
-    )
-
-    var movies by remember {
-        mutableStateOf<List<Movie>>(emptyList())
-    }
-
-    LaunchedEffect(Unit) {
-        movies = OmdbApiService().getMovies(titles)
-    }
-
 
     val listState = rememberLazyListState()
 
@@ -74,31 +53,7 @@ fun MovieCarousel(
         192.dp.toPx()
     }
 
-    LaunchedEffect(listState) {
-        while (true) {
-            while (listState.isScrollInProgress) {
-                delay(1000)
-            }
-            delay(2000)
-            if (!listState.isScrollInProgress) {
-                try {
-                    val consumed = listState.animateScrollBy(
-                        value = itemStep,
-                        animationSpec = tween(
-                            durationMillis = 850,
-                            easing = FastOutSlowInEasing
-                        )
-                    )
-                    if (consumed < itemStep * 0.5f) {
-                        listState.scrollToItem(0)
-                    }
-                } catch (e: CancellationException) {
-                    currentCoroutineContext().ensureActive()
 
-                }
-            }
-        }
-    }
 
     Box(
         modifier = modifier
@@ -139,6 +94,39 @@ fun MovieCarousel(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
+            val itemSpacing = if (maxWidth > maxHeight) {
+                32.dp
+            } else {
+                12.dp
+            }
+            val itemStep = with(LocalDensity.current) {
+                (180.dp + itemSpacing).toPx()
+            }
+            LaunchedEffect(listState) {
+                while (true) {
+                    while (listState.isScrollInProgress) {
+                        delay(1000)
+                    }
+                    delay(2000)
+                    if (!listState.isScrollInProgress) {
+                        try {
+                            val consumed = listState.animateScrollBy(
+                                value = itemStep,
+                                animationSpec = tween(
+                                    durationMillis = 850,
+                                    easing = FastOutSlowInEasing
+                                )
+                            )
+                            if (consumed < itemStep * 0.5f) {
+                                listState.scrollToItem(0)
+                            }
+                        } catch (e: CancellationException) {
+                            currentCoroutineContext().ensureActive()
+
+                        }
+                    }
+                }
+            }
             val horizontalPadding = ((maxWidth - 180.dp) / 2).coerceAtLeast(0.dp)
             LazyRow(
                 state = listState,
@@ -149,7 +137,7 @@ fun MovieCarousel(
                     horizontal = horizontalPadding,
                     vertical = 24.dp
                 ),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(itemSpacing),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 itemsIndexed(movies) { index, movie ->
@@ -213,9 +201,3 @@ fun MovieCarousel(
 }
 
 
-@Preview
-@Composable
-fun movieCarouselPreview() {
-    MovieCarousel()
-
-}

@@ -46,28 +46,21 @@ private val samplePosters = listOf(
 fun MovieCarousel(
     modifier: Modifier = Modifier,
 ) {
-
     val listState = rememberLazyListState()
-
-
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .drawBehind {
                 val gradientHeight = size.height * 0.4f
                 val top = (size.height - gradientHeight) / 2f
-
                 val center = Offset(
                     x = size.width / 2f,
                     y = size.height / 2f
                 )
-
                 //عرض بیضی
                 val radius = size.width * 1f
-
                 //ارتفاع بیضی
                 val verticalRadius = size.height * 0.28f
-
                 scale(
                     scaleX = 1f,
                     scaleY = verticalRadius / radius,
@@ -75,42 +68,17 @@ fun MovieCarousel(
                 ) {
                     drawCircle(
                         brush = Brush.radialGradient(
-                            colorStops = arrayOf(
-                                0.0f to Color(0xFFFF2448),
-                                0.25f to Color(0xFFE51B3D),
-                                0.50f to Color(0xFFAD142C),
-                                0.70f to Color(0xFF650D20),
-                                0.85f to Color(0xFF350812).copy(alpha = 0.7f),
-                                1.0f to Color.Transparent
-                            ),
+                            colors = listOf(
+                                Color(0x80FF1937),
+                                Color(0x33FF1937),
+                                Color.Transparent
+                            )
+                            ,
                             center = center, radius = radius
                         ),
                         radius = radius, center = center
                     )
                 }
-
-
-//                    brush = Brush.radialGradient(
-//                        colors = listOf(
-//                            Color(0xFDEA0909).copy(alpha = 0.85f),
-//                            Color(0xFDB62A2A).copy(alpha = 0.35f),
-//                            Color.Transparent
-//                        ),
-//                        center = center,
-//                        radius = size.minDimension * 0.85f
-//                    )
-
-//                drawRect(
-//                    brush = Brush.radialGradient(
-//                        colors = listOf(
-//                            Color(0xFFF3E8EA).copy(alpha = 0.25f),
-//                            Color.Transparent
-//                        ),
-//                        center = center,
-//                        radius = size.minDimension * 1.1f
-//                    )
-//                )
-
             },
         contentAlignment = Alignment.Center
 
@@ -148,75 +116,40 @@ fun MovieCarousel(
                     1f
                 }
                 val easedProgress = progress.pow(1.9f)
-//                Box(
-//                    modifier = Modifier
-//                        .width(160.dp)
-//                        .height(300.dp),
-//                    contentAlignment = Alignment.Center
-//                ) {
+                Box(
+                    modifier = Modifier
+                        .width(180.dp)
+                        .height(340.dp)
+                        .matchParentSize(),
+                    contentAlignment = Alignment.Center
 
-                    Box(
+                ) {
+                    MovieCard(
+                        posterUrl = posterUrl,
+                        brightness = 1f-(easedProgress * 0.18f),
                         modifier = Modifier
                             .width(160.dp)
-                            .height(280.dp)
-                            .matchParentSize()
+                            .height(300.dp)
                             .graphicsLayer {
-                                alpha = (1f - easedProgress) * 0.9f
-                                scaleX = 1.25f
-                                scaleY = 1.25f
+
+                                val centerScale = 1f - (easedProgress * 0.25f)
+
+                                scaleX = centerScale + 0.25f
+                                scaleY=centerScale + 0.25f
+                                translationY=-(1f-easedProgress)*10.dp.toPx()
+                                alpha=1f-(easedProgress*0.4f)
                             }
-                            .drawBehind {
-                                drawRect(
-                                    brush = Brush.radialGradient(
-                                        colors = listOf(
-                                            Color(0xFDFFFFFF).copy(alpha = 0.25f),
-                                            Color(0xFDFFFFFF).copy(alpha = 0.25f),
-                                            Color.Transparent
-                                        ),
-                                        center = center,
-                                        radius = size.minDimension * 0.85f
-                                    )
-                                )
-                                drawRect(
-                                    brush = Brush.radialGradient(
-                                        colors = listOf(
-                                            Color(0xFF090909).copy(alpha = 0.25f),
-                                            Color.Transparent
-                                        ),
-                                        center = center,
-                                        radius = size.minDimension * 1.1f
-                                    )
-                                )
-                            },
-                        contentAlignment = Alignment.Center
-
-                    ) {
-                        MovieCard(
-                            posterUrl = posterUrl,
-                            modifier = Modifier
-                                .width(140.dp)
-                                .height(270.dp)
-                                .graphicsLayer{
-                                    scaleX = 1f - (easedProgress * 0.22f)
-                                    scaleY = 1f - (easedProgress * 0.22f)
-                                    alpha = 1f - (easedProgress * 0.4f)
-                                }
-
-                        )
-                    }
-//                }
+                    )
+                }
             }
-
         }
     }
-
-
 }
 
 
 @Preview
 @Composable
-fun preview() {
+fun movieCarouselPreview() {
     MovieCarousel()
 
 }

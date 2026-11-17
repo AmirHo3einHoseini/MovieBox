@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -16,13 +18,23 @@ import coil3.compose.AsyncImage
 @Composable
 fun MovieCard(
     posterUrl: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    brightness: Float = 1f
 ) {
+    val colorMatrix = ColorMatrix().apply {
+        setToScale(
+            brightness,
+            brightness,
+            brightness,
+            1f
+        )
+    }
 
     AsyncImage(
         model = posterUrl,
         contentDescription = "Movie poster",
         contentScale = ContentScale.Crop,
+        colorFilter = ColorFilter.colorMatrix(colorMatrix),
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(0.68f)

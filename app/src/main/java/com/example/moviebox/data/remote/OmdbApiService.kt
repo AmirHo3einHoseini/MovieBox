@@ -1,7 +1,6 @@
-package com.example.moviebox.data.remot
+package com.example.moviebox.data.remote
 
 
-import android.R.attr.rating
 import android.util.Log
 import com.example.moviebox.domain.model.Movie
 import kotlinx.coroutines.Dispatchers
@@ -10,7 +9,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
@@ -21,14 +19,11 @@ import kotlin.coroutines.cancellation.CancellationException
 
 class OmdbApiService {
     private val movieCache = ConcurrentHashMap<String, Movie>()
-
-
     private companion object {
         const val API_KEY = "d64ea631"
         const val MAX_CONCURRENT_REQUESTS = 5
         const val TIMEOUT = 10_000
     }
-
     suspend fun getMovies(titles: List<String>): List<Movie> =
         coroutineScope {
             val semaphore = Semaphore(MAX_CONCURRENT_REQUESTS)
@@ -40,8 +35,6 @@ class OmdbApiService {
                 }
             }.awaitAll().filterNotNull()
         }
-
-
     private fun fetchMovie(title: String): Movie? {
         val cacheKey = title.trim().lowercase()
 
@@ -103,7 +96,7 @@ class OmdbApiService {
             )
 
             movieCache[cacheKey] = movie
-            
+
             movie
         } catch (e: CancellationException) {
             throw e

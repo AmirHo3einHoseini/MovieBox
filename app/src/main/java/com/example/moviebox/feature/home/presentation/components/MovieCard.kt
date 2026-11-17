@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -55,10 +54,7 @@ fun MovieCard(
             contentDescription = "Movie poster",
             contentScale = ContentScale.Crop,
             colorFilter = ColorFilter.colorMatrix(colorMatrix),
-            modifier = modifier
-                .fillMaxWidth()
-                .aspectRatio(0.68f)
-                .clip(RoundedCornerShape(12.dp))
+            modifier =Modifier.fillMaxSize()
 
         )
         Box(
@@ -154,8 +150,3 @@ fun MovieCard(
 }
 
 
-@Preview
-@Composable
-private fun movieCardPreview() {
-    MovieCard(movie = Movie(posterUrl = ""))
-}

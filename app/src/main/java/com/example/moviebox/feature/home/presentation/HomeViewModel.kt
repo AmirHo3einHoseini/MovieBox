@@ -2,8 +2,10 @@ package com.example.moviebox.feature.home.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.moviebox.data.remot.OmdbApiService
+import com.example.moviebox.data.local.MovieCatalog
+import com.example.moviebox.data.remote.OmdbApiService
 import com.example.moviebox.feature.home.state.HomeUiState
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,14 +32,7 @@ class HomeViewModel : ViewModel() {
             }
             try {
                 val movies = omdbApiService.getMovies(
-                    listOf(
-                        "The Last of Us",
-                        "Breaking Bad",
-                        "Game of Thrones",
-                        "Inception",
-                        "Interstellar",
-                        "The Dark Knight"
-                    )
+                    MovieCatalog.titles
                 )
                 _uiState.update {
                     it.copy(
@@ -49,7 +44,8 @@ class HomeViewModel : ViewModel() {
                     )
                 }
 
-
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(

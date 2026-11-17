@@ -17,7 +17,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -29,6 +32,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.moviebox.data.remot.OmdbApiService
+import com.example.moviebox.domain.model.Movie
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
@@ -37,31 +42,32 @@ import kotlin.math.abs
 import kotlin.math.pow
 
 
-private val samplePosters = listOf(
-    "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
-    "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
-    "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
-    "https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg",
-    "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
-    "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
-    "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
-    "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
-    "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
-    "https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg",
-    "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
-    "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
-    "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
-    "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
-    "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
-    "https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg",
-    "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
-    "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg"
-)
+
+
+
 
 @Composable
 fun MovieCarousel(
     modifier: Modifier = Modifier,
 ) {
+    val titles = listOf(
+        "The Last of Us",
+        "Breaking Bad",
+        "Game of Thrones",
+        "Inception",
+        "Interstellar",
+        "The Dark Knight"
+    )
+
+    var movies by remember {
+        mutableStateOf<List<Movie>>(emptyList())
+    }
+
+    LaunchedEffect(Unit) {
+        movies = OmdbApiService().getMovies(titles)
+    }
+
+
     val listState = rememberLazyListState()
 
     val itemStep = with(LocalDensity.current) {
@@ -146,7 +152,7 @@ fun MovieCarousel(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                itemsIndexed(samplePosters) { index, posterUrl ->
+                itemsIndexed(movies) { index, movie ->
                     val easedProgressState = remember(listState, index) {
 
                         derivedStateOf {
@@ -177,12 +183,12 @@ fun MovieCarousel(
                     Box(
                         modifier = Modifier
                             .width(180.dp)
-                            .height(380.dp)
-                            .matchParentSize(),
+                            .height(380.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         MovieCard(
-                            posterUrl = posterUrl,
+                            movie = movie,
+                            posterUrl = movie.posterUrl,
                             brightness = 1f - (easedProgress * 0.18f),
 
                             modifier = Modifier

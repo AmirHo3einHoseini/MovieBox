@@ -54,7 +54,7 @@ fun MovieCard(
             contentDescription = "Movie poster",
             contentScale = ContentScale.Crop,
             colorFilter = ColorFilter.colorMatrix(colorMatrix),
-            modifier =Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize()
 
         )
         Box(
@@ -107,15 +107,19 @@ fun MovieCard(
                 overflow = TextOverflow.Ellipsis
             )
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(7.dp)
             ) {
                 Text(
                     text = movie.year,
                     color = Color.White.copy(alpha = 0.85f),
-                    fontSize = 11.sp
+                    fontSize = 11.sp,
+                    maxLines = 1,
+                    softWrap = false,
+                    modifier = Modifier.weight(1f)
                 )
-                if (movie.totalSeasons != null){
+                if (movie.totalSeasons != null) {
                     Text(
                         text = "•",
                         color = Color.White.copy(alpha = 0.7f)
@@ -123,12 +127,14 @@ fun MovieCard(
                     Text(
                         text = "${movie.totalSeasons} Seasons",
                         color = Color.White.copy(alpha = 0.85f),
-                        fontSize = 11.sp
+                        fontSize = 11.sp,
+                        maxLines = 1,
+                        softWrap = false
                     )
                 }
             }
 
-            movie.network?.takeIf { it.isNotBlank() }?.let{network->
+            movie.network?.takeIf { it.isNotBlank() }?.let { network ->
                 Text(
                     text = network,
                     color = Color.White,
